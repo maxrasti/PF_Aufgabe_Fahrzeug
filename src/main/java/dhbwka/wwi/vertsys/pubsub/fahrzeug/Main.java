@@ -55,11 +55,10 @@ public class Main {
         // Adresse des MQTT-Brokers abfragen
         String mqttAddress = Utils.askInput("MQTT-Broker", Utils.MQTT_BROKER_ADDRESS);
         
+  // Erstellen des Clients und Verbinden
         MqttConnectOptions connOptions = new MqttConnectOptions();
         connOptions.setCleanSession(false);
-        
-        MqttClient client = new MqttClient(mqttAddress, clientId, persistence);
-        
+                MqttClient client = new MqttClient(mqttAddress, clientId, persistence);
         client.connect(connOptions);
         
         
