@@ -55,10 +55,11 @@ public class Main {
         // Adresse des MQTT-Brokers abfragen
         String mqttAddress = Utils.askInput("MQTT-Broker", Utils.MQTT_BROKER_ADDRESS);
         
-  // Erstellen des Clients und Verbinden
+         // Erstellen des Clients und Verbinden
         MqttConnectOptions connOptions = new MqttConnectOptions();
         connOptions.setCleanSession(false);
-                MqttClient client = new MqttClient(mqttAddress, clientId, persistence);
+        connOptions.setWill(topic, payload, index, true);
+        MqttClient client = new MqttClient(mqttAddress, clientId, persistence);
         client.connect(connOptions);
         
         
@@ -69,7 +70,7 @@ public class Main {
         // Feld "type" auf "StatusType.CONNECTION_LOST" gesetzt ist.
         
     
-        if m
+        if 
         //
         // Die Nachricht muss dem MqttConnectOptions-Objekt übergeben werden
         // und soll an das Topic Utils.MQTT_TOPIC_NAME gesendet werden.
