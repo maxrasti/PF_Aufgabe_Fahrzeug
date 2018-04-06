@@ -58,7 +58,9 @@ public class Main {
          // Erstellen des Clients und Verbinden
         MqttConnectOptions connOptions = new MqttConnectOptions();
         connOptions.setCleanSession(false);
-        connOptions.setWill(topic, payload, index, true);
+        
+        
+        
         MqttClient client = new MqttClient(mqttAddress, clientId, persistence);
         client.connect(connOptions);
         
@@ -70,11 +72,13 @@ public class Main {
         // Feld "type" auf "StatusType.CONNECTION_LOST" gesetzt ist.
         
     
-        if 
-        //
+        
         // Die Nachricht muss dem MqttConnectOptions-Objekt übergeben werden
         // und soll an das Topic Utils.MQTT_TOPIC_NAME gesendet werden.
         
+        byte [] hallo = {0,0};
+                    
+        connOptions.setWill(Utils.MQTT_TOPIC_NAME, hallo, 0, true);
         // TODO: Verbindung zum MQTT-Broker herstellen.
 
         // TODO: Statusmeldung mit "type" = "StatusType.VEHICLE_READY" senden.
