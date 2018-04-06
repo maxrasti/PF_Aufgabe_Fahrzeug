@@ -13,6 +13,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import org.eclipse.paho.client.mqttv3.MqttClient;
+import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 
 /**
  * Hauptklasse unseres kleinen Progrämmchens.
@@ -52,11 +54,23 @@ public class Main {
 
         // Adresse des MQTT-Brokers abfragen
         String mqttAddress = Utils.askInput("MQTT-Broker", Utils.MQTT_BROKER_ADDRESS);
+        
+         // Erstellen des Clients und Verbinden
+        MqttConnectOptions connOptions = new MqttConnectOptions();
+        connOptions.setCleanSession(false);
+        connOptions.setWill(topic, payload, index, true);
+        MqttClient client = new MqttClient(mqttAddress, clientId, persistence);
+        client.connect(connOptions);
+        
+        
 
         // TODO: Sicherstellen, dass bei einem Verbindungsabbruch eine sog.
         // LastWill-Nachricht gesendet wird, die auf den Verbindungsabbruch
         // hinweist. Die Nachricht soll eine "StatusMessage" sein, bei der das
         // Feld "type" auf "StatusType.CONNECTION_LOST" gesetzt ist.
+        
+    
+        if 
         //
         // Die Nachricht muss dem MqttConnectOptions-Objekt übergeben werden
         // und soll an das Topic Utils.MQTT_TOPIC_NAME gesendet werden.
