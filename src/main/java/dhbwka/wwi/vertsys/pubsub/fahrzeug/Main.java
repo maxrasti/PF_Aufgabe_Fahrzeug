@@ -85,7 +85,7 @@ public class Main {
         MqttClient client = new MqttClient(mqttAddress, clientId);
         client.connect(mqttOptions);
 
-        // TODO: Statusmeldung mit "type" = "StatusType.VEHICLE_READY" sendenss.
+        // TODO: Statusmeldung mit "type" = "StatusType.VEHICLE_READY" senden.
         // Die Nachricht soll soll an das Topic Utils.MQTT_TOPIC_NAME gesendet
         // werden.
         StatusMessage statusmessage = new StatusMessage();
