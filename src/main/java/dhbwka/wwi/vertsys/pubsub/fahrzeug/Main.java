@@ -77,13 +77,13 @@ public class Main {
         String clientId = "Fahzeug-" + System.currentTimeMillis();
 
         //Verbindung zum MQTT-Broker herstellen.
-        MqttConnectOptions options = new MqttConnectOptions();
-        options.setCleanSession(true);
+        MqttConnectOptions mqttOptions = new MqttConnectOptions();
+        mqttOptions.setCleanSession(true);
 
-        options.setWill(Utils.MQTT_TOPIC_NAME, lastMessage.toJson(), 0, false);
+        mqttOptions.setWill(Utils.MQTT_TOPIC_NAME, lastMessage.toJson(), 0, false);
 
         MqttClient client = new MqttClient(mqttAddress, clientId);
-        client.connect(options);
+        client.connect(mqttOptions);
 
         // TODO: Statusmeldung mit "type" = "StatusType.VEHICLE_READY" senden.
         // Die Nachricht soll soll an das Topic Utils.MQTT_TOPIC_NAME gesendet
