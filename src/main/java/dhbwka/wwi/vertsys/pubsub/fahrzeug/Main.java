@@ -7,6 +7,8 @@
  * Dieser Quellcode ist lizenziert unter einer
  * Creative Commons Namensnennung 4.0 International Lizenz.
  */
+// Frank Föcking Yannik Lischka Max Rastetter
+
 package dhbwka.wwi.vertsys.pubsub.fahrzeug;
 
 import java.io.BufferedReader;
@@ -56,7 +58,8 @@ public class Main {
 
         System.out.println();
         int index = Integer.parseInt(Utils.askInput("Zu fahrende Strecke", "0"));
-
+        
+        // TODO: Methode parseItnFile() unten ausprogrammieren
         List<WGS84> waypoints = parseItnFile(new File(workdir, waypointFiles[index]));
 
         // Adresse des MQTT-Brokers abfragen
@@ -69,18 +72,19 @@ public class Main {
         //
         // Die Nachricht muss dem MqttConnectOptions-Objekt übergeben werden
         // und soll an das Topic Utils.MQTT_TOPIC_NAME gesendet werden.
-        StatusMessage lastMessage = new StatusMessage();
-        lastMessage.vehicleId = vehicleId;
-        lastMessage.message = "Verbindung abgebrochen";
-        lastMessage.type = StatusType.CONNECTION_LOST;
+        StatusMessage letzterWille = new StatusMessage();
+        
+        letzterWille.vehicleId = vehicleId;
+        letzterWille.message =  "Verbindung nicht mehr Verfügbar";
+        letzterWille.type = StatusType.CONNECTION_LOST;
 
-        String clientId = "Fahzeug-" + System.currentTimeMillis();
+        String clientId = "Fahrer(Fahrzeug) - " + System.currentTimeMillis();
 
         //Verbindung zum MQTT-Broker herstellen.
         MqttConnectOptions mqttOptions = new MqttConnectOptions();
         mqttOptions.setCleanSession(true);
 
-        mqttOptions.setWill(Utils.MQTT_TOPIC_NAME, lastMessage.toJson(), 0, false);
+        mqttOptions.setWill(Utils.MQTT_TOPIC_NAME, letzterWille.toJson(), 0, false);
 
         MqttClient client = new MqttClient(mqttAddress, clientId);
         client.connect(mqttOptions);
@@ -88,11 +92,11 @@ public class Main {
         // TODO: Statusmeldung mit "type" = "StatusType.VEHICLE_READY" senden.
         // Die Nachricht soll soll an das Topic Utils.MQTT_TOPIC_NAME gesendet
         // werden.
-        StatusMessage statusmessage = new StatusMessage();
-        statusmessage.vehicleId = vehicleId;
-        statusmessage.type = StatusType.VEHICLE_READY;
+        StatusMessage statusMeldung = new StatusMessage();
+        statusMeldung.vehicleId = vehicleId;
+        statusMeldung.type = StatusType.VEHICLE_READY;
 
-        client.publish(Utils.MQTT_TOPIC_NAME, statusmessage.toJson(), 0, false);
+        client.publish(Utils.MQTT_TOPIC_NAME, statusMeldung.toJson(), 0, false);
 
         // TODO: Thread starten, der jede Sekunde die aktuellen Sensorwerte
         // des Fahrzeugs ermittelt und verschickt. Die Sensordaten sollen
@@ -103,9 +107,10 @@ public class Main {
         TimerTask task = new TimerTask() {
             @Override
             public void run() {
-                SensorMessage sm = vehicle.getSensorData();
+                SensorMessage sensMessage = vehicle.getSensorData();
 
-                byte[] json = sm.toJson();
+                byte[] json = sensMessage.toJson();
+                
                 String topic = Utils.MQTT_TOPIC_NAME + "/" + vehicleId;
                 System.out.println(topic + " -> " + new String(json, StandardCharsets.UTF_8));
 
@@ -113,13 +118,14 @@ public class Main {
                     MqttMessage message = new MqttMessage(json);
                     client.publish(topic, message);
                 } catch (MqttException ex) {
+                    System.out.println("Mqtt Exception in run()");
                     Utils.logException(ex);
                 }
             }
         };
 
-        Timer timer = new Timer(true);
-        timer.scheduleAtFixedRate(task, 0, 1000);
+        Timer intervall = new Timer(true);
+        intervall.scheduleAtFixedRate(task, 0, 1000);
 
         // Warten, bis das Programm beendet werden soll
         Utils.fromKeyboard.readLine();
@@ -132,12 +138,18 @@ public class Main {
         //
         // Anschließend die Verbindung trennen und den oben gestarteten Thread
         // beenden, falls es kein Daemon-Thread ist.
-        //LastWill-Nachricht versenden
-        client.publish(Utils.MQTT_TOPIC_NAME, lastMessage.toJson(), 0, false);
+        
+        client.publish(Utils.MQTT_TOPIC_NAME, letzterWille.toJson(), 0, false);
 
-        //Verbindung trennen
+        /**Verbindung wird getrennt
+         * 
+         */
         client.disconnect();
-        //gestarteten Thread beenden
+        
+       
+        /**gestarteten Thread wird beendet
+         * 
+         */
         System.exit(0);
 
     }
@@ -166,20 +178,23 @@ public class Main {
         List<WGS84> waypoints = new ArrayList<>();
 
         // TODO: Übergebene Datei parsen und Liste "waypoints" damit füllen
-        BufferedReader fromFile = new BufferedReader(new InputStreamReader(new FileInputStream(file)));
-        String line;
+        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(new FileInputStream(file)));
+        String text;
 
-        while ((line = fromFile.readLine()) != null) {
-            String[] stringArr = line.split("\\|");
-            if (stringArr.length >= 2) {
-                String longitudeStr = stringArr[0];
-                String latitudeStr = stringArr[1];
+        while ((text = bufferedReader.readLine()) != null) {
+            String[] stringArray = text.split("\\|");
+            
+            if (stringArray.length >= 2) {
+                String longitude = stringArray[0];
+                String latitude = stringArray[1];
                 WGS84 waypoint = new WGS84();
+                
                 try {
-                    waypoint.longitude = Double.parseDouble(longitudeStr) / 100_000.0;;
-                    waypoint.latitude = Double.parseDouble(latitudeStr) / 100_000.0;;
+                    waypoint.longitude = Double.parseDouble(longitude) / 100_000.0;;
+                    waypoint.latitude = Double.parseDouble(latitude) / 100_000.0;;
                     waypoints.add(waypoint);
                 } catch (NumberFormatException ex) {
+                    System.out.println("NumberFormatException in List");
                     Utils.logException(ex);
                 }
             }
