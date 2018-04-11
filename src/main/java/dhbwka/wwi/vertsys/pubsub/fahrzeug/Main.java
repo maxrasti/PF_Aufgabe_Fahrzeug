@@ -190,8 +190,8 @@ public class Main {
                 WGS84 waypoint = new WGS84();
                 
                 try {
-                    waypoint.longitude = Double.parseDouble(longitude) / 100_000.0;;
-                    waypoint.latitude = Double.parseDouble(latitude) / 100_000.0;;
+                    waypoint.longitude = Double.parseDouble(longitude) / 100_000.0;
+                    waypoint.latitude = Double.parseDouble(latitude) / 100_000.0;
                     waypoints.add(waypoint);
                 } catch (NumberFormatException ex) {
                     System.out.println("NumberFormatException in List");
