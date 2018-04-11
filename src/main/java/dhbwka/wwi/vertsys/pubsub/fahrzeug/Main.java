@@ -59,13 +59,13 @@ public class Main {
         System.out.println();
         int index = Integer.parseInt(Utils.askInput("Zu fahrende Strecke", "0"));
         
-        // TODO: Methode parseItnFile() unten ausprogrammieren
+        // TODO(Frank): Methode parseItnFile() unten ausprogrammieren
         List<WGS84> waypoints = parseItnFile(new File(workdir, waypointFiles[index]));
 
         // Adresse des MQTT-Brokers abfragen
         String mqttAddress = Utils.askInput("MQTT-Broker", Utils.MQTT_BROKER_ADDRESS);
 
-        // TODO: Sicherstellen, dass bei einem Verbindungsabbruch eine sog.
+        // TODO(Yannik): Sicherstellen, dass bei einem Verbindungsabbruch eine sog.
         // LastWill-Nachricht gesendet wird, die auf den Verbindungsabbruch
         // hinweist. Die Nachricht soll eine "StatusMessage" sein, bei der das
         // Feld "type" auf "StatusType.CONNECTION_LOST" gesetzt ist.
@@ -89,7 +89,7 @@ public class Main {
         MqttClient client = new MqttClient(mqttAddress, clientId);
         client.connect(mqttOptions);
 
-        // TODO: Statusmeldung mit "type" = "StatusType.VEHICLE_READY" senden.
+        // TODO(Max): Statusmeldung mit "type" = "StatusType.VEHICLE_READY" senden.
         // Die Nachricht soll soll an das Topic Utils.MQTT_TOPIC_NAME gesendet
         // werden.
         StatusMessage statusMeldung = new StatusMessage();
@@ -98,7 +98,7 @@ public class Main {
 
         client.publish(Utils.MQTT_TOPIC_NAME, statusMeldung.toJson(), 0, false);
 
-        // TODO: Thread starten, der jede Sekunde die aktuellen Sensorwerte
+        // TODO(Frank): Thread starten, der jede Sekunde die aktuellen Sensorwerte
         // des Fahrzeugs ermittelt und verschickt. Die Sensordaten sollen
         // an das Topic Utils.MQTT_TOPIC_NAME + "/" + vehicleId gesendet werden.
         Vehicle vehicle = new Vehicle(vehicleId, waypoints);
@@ -132,7 +132,7 @@ public class Main {
 
         vehicle.stopVehicle();
 
-        // TODO: Oben vorbereitete LastWill-Nachricht hier manuell versenden,
+        // TODO(Max): Oben vorbereitete LastWill-Nachricht hier manuell versenden,
         // da sie bei einem regulären Verbindungsende nicht automatisch
         // verschickt wird.
         //
@@ -177,7 +177,7 @@ public class Main {
     public static List<WGS84> parseItnFile(File file) throws IOException {
         List<WGS84> waypoints = new ArrayList<>();
 
-        // TODO: Übergebene Datei parsen und Liste "waypoints" damit füllen
+        // TODO(Yannik): Übergebene Datei parsen und Liste "waypoints" damit füllen
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(new FileInputStream(file)));
         String text;
 
